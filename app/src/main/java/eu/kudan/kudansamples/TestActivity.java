@@ -27,7 +27,7 @@ public class TestActivity extends ARActivity{
 
 
 
-
+		/*
 		// create a trackable from a bundled image.
 		ARImageTrackable wavesTrackable = new ARImageTrackable("waves");
 		wavesTrackable.loadFromAsset("waves.png");
@@ -39,16 +39,18 @@ public class TestActivity extends ARActivity{
 		
 		// add video to the waves trackable.
 		wavesTrackable.getWorld().addChild(videoNode);
-		
+		*/
+
 		// load a set of trackables from a bundled file.
 		ARTrackableSet trackableSet = new ARTrackableSet();
 		trackableSet.loadFromAsset("demo.KARMarker");
-		
+
+
 		ARImageTracker tracker = ARImageTracker.getInstance();
 		
 		// add our trackables to the tracker.
 		tracker.addTrackableSet(trackableSet);
-		tracker.addTrackable(wavesTrackable);
+		//tracker.addTrackable(wavesTrackable);
 		
 		// create an image node.
 		ARImageTrackable legoTrackable = tracker.findTrackable("lego");
