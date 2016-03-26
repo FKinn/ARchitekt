@@ -27,7 +27,7 @@ public class TestActivity extends ARActivity implements ARImageTrackableListener
 
 
 
-		/*
+
 		// create a trackable from a bundled image.
 		ARImageTrackable wavesTrackable = new ARImageTrackable("waves");
 		wavesTrackable.loadFromAsset("waves.png");
@@ -39,7 +39,7 @@ public class TestActivity extends ARActivity implements ARImageTrackableListener
 		
 		// add video to the waves trackable.
 		wavesTrackable.getWorld().addChild(videoNode);
-		*/
+
 
 		// load a set of trackables from a bundled file.
 		ARTrackableSet trackableSet = new ARTrackableSet();
