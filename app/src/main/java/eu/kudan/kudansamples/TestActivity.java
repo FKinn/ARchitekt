@@ -4,7 +4,7 @@ import android.os.Bundle;
 import android.util.Log;
 import eu.kudan.kudan.*;
 
-public class TestActivity extends ARActivity{
+public class TestActivity extends ARActivity implements ARImageTrackableListener{
 
 	public ARModelNode model;
 
@@ -119,7 +119,7 @@ public class TestActivity extends ARActivity{
 			//this.model.scaleByUniform();
 		}
 	}
-	/*
+
 	@Override
 	public void didDetect(ARImageTrackable trackable) {
 		Log.i("KudanSamples", "detected " + trackable.getName());
@@ -135,6 +135,6 @@ public class TestActivity extends ARActivity{
 	public void didLose(ARImageTrackable trackable) {
 		Log.i("KudanSamples", "lost " + trackable.getName());
 	}
-	*/
+
 
 }
