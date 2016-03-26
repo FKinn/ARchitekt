@@ -18,6 +18,7 @@ public class TestActivity extends ARActivity{
 
 	public void setup() {
 
+
 		//TEST
 
 		//setupModel();
@@ -26,7 +27,7 @@ public class TestActivity extends ARActivity{
 
 
 
-		/* Old Tracker
+
 		// create a trackable from a bundled image.
 		ARImageTrackable wavesTrackable = new ARImageTrackable("waves");
 		wavesTrackable.loadFromAsset("waves.png");
@@ -58,7 +59,6 @@ public class TestActivity extends ARActivity{
 		
 		// add it to the lego trackable.
 		legoTrackable.getWorld().addChild(imageNode);
-		*/
 
 
 
