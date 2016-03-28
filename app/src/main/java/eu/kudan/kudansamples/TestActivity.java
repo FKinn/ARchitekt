@@ -1,19 +1,34 @@
 package eu.kudan.kudansamples;
 
 import android.os.Bundle;
+import android.support.v4.view.GestureDetectorCompat;
+import android.support.v4.view.ScaleGestureDetectorCompat;
 import android.util.Log;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
+import android.view.ScaleGestureDetector;
+
+
 import eu.kudan.kudan.*;
 
-public class TestActivity extends ARActivity implements ARImageTrackableListener{
+public class TestActivity extends ARActivity implements ARImageTrackableListener, GestureDetector.OnGestureListener{
 
-	public ARModelNode model;
+	public ARModelNode modelNode;
+
+	private GestureDetectorCompat gDetector;
+
 
 
 	public void onCreate(Bundle savedInstanceState) {
+		// gesture
+		this.gDetector = new GestureDetectorCompat(this,this);
+
 		// set api key for this package name.
 		ARAPIKey key = ARAPIKey.getInstance();
 		key.setAPIKey("GAWAE-FBVCC-XA8ST-GQVZV-93PQB-X7SBD-P6V4W-6RS9C-CQRLH-78YEU-385XP-T6MCG-2CNWB-YK8SR-8UUQ");
 		super.onCreate(savedInstanceState);
+
+
 	}
 
 	public void setup() {
@@ -50,7 +65,7 @@ public class TestActivity extends ARActivity implements ARImageTrackableListener
 		
 		// add our trackables to the tracker.
 		tracker.addTrackableSet(trackableSet);
-		//tracker.addTrackable(wavesTrackable);
+		tracker.addTrackable(wavesTrackable);
 		
 		// create an image node.
 		ARImageTrackable legoTrackable = tracker.findTrackable("lego");
@@ -73,7 +88,7 @@ public class TestActivity extends ARActivity implements ARImageTrackableListener
 		// Import model from file.
 		ARModelImporter modelImport = new ARModelImporter();
 		modelImport.loadFromAsset("NeugereutModellTreppeRampe.jet");
-		model = (ARModelNode) modelImport.getNode();
+		modelNode = (ARModelNode) modelImport.getNode();
 
 
 	}
@@ -97,7 +112,7 @@ public class TestActivity extends ARActivity implements ARImageTrackableListener
 		targetImageNode.rotateByDegrees(90, 1, 0, 0);
 
 		// Initialise the arbiTracker, do not start until user placement.
-		ARArbiTrack slamTracker = new ARArbiTrack();
+		ARArbiTrack slamTracker = ARArbiTrack.getInstance();
 		slamTracker.initialise();
 
 		// Set the arbiTracker target node to the node moved by the user.
@@ -105,7 +120,7 @@ public class TestActivity extends ARActivity implements ARImageTrackableListener
 
 
 
-		slamTracker.getWorld().addChild(model);
+		slamTracker.getWorld().addChild(modelNode);
 
 
 	}
@@ -115,10 +130,42 @@ public class TestActivity extends ARActivity implements ARImageTrackableListener
 	}
 
 	private void tapGesture() {
-		synchronized (ARRenderer.getInstance()){
-			//this.model.scaleByUniform();
+
+		ARArbiTrack slamTracker = ARArbiTrack.getInstance();
+
+		if(!slamTracker.getIsTracking()){
+			slamTracker.start();
+			slamTracker.getTargetNode().setVisible(false);
+			this.modelNode.setScale(1,1,1);
+
+		} else if(slamTracker.getIsTracking()){
+			slamTracker.stop();
+			slamTracker.getTargetNode().setVisible(true);
+
 		}
 	}
+
+	private void pinchGesture(){
+
+
+	}
+
+	private void panGesture(){
+
+		/*
+		float x = 0; //float x = [gesture translationInView:self.cameraView].x; Objective C
+
+
+		float diff = x - lastPanX;
+		float deg = diff *0.5;
+		synchronized (ARRenderer.getInstance()){
+			this.modelNode.rotateByDegrees(deg,0,1,0);
+		}
+		*/
+	}
+
+
+
 
 	@Override
 	public void didDetect(ARImageTrackable trackable) {
@@ -136,5 +183,68 @@ public class TestActivity extends ARActivity implements ARImageTrackableListener
 		Log.i("KudanSamples", "lost " + trackable.getName());
 	}
 
+
+	//region Gesture listener
+	@Override
+	public boolean onDown(MotionEvent e) {
+		return false;
+	}
+
+	@Override
+	public void onShowPress(MotionEvent e) {
+
+	}
+
+	@Override
+	public boolean onSingleTapUp(MotionEvent e) {
+		Log.i("KudanSamples", "SingleTap");
+		return false;
+	}
+
+	@Override
+	public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+		return false;
+	}
+
+	@Override
+	public void onLongPress(MotionEvent e) {
+
+	}
+
+	@Override
+	public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+		return false;
+	}
+
+	@Override
+	public boolean onTouchEvent(MotionEvent event) {
+
+		//boolean handled = gestureScale.onTouchEvent(event);
+
+		//if(!handled){
+			this.gDetector.onTouchEvent(event);
+		//}
+		// Be sure to call the superclass implementation
+		return super.onTouchEvent(event);
+	}
+
+	/*/Scale gesture
+	@Override
+	public boolean onScale(ScaleGestureDetector detector) {
+
+		return false;
+	}
+
+	@Override
+	public boolean onScaleBegin(ScaleGestureDetector detector) {
+		return false;
+	}
+
+	@Override
+	public void onScaleEnd(ScaleGestureDetector detector) {
+
+	}
+	*/
+	//endregion
 
 }
