@@ -2,11 +2,11 @@ package eu.kudan.kudansamples;
 
 import android.os.Bundle;
 import android.support.v4.view.GestureDetectorCompat;
-import android.support.v4.view.ScaleGestureDetectorCompat;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
+import android.view.View;
 
 
 import eu.kudan.kudan.*;
@@ -23,10 +23,14 @@ public class TestActivity extends ARActivity implements ARImageTrackableListener
 		// gesture
 		this.gDetector = new GestureDetectorCompat(this,this);
 
+
+
+
 		// set api key for this package name.
 		ARAPIKey key = ARAPIKey.getInstance();
 		key.setAPIKey("GAWAE-FBVCC-XA8ST-GQVZV-93PQB-X7SBD-P6V4W-6RS9C-CQRLH-78YEU-385XP-T6MCG-2CNWB-YK8SR-8UUQ");
 		super.onCreate(savedInstanceState);
+
 
 
 	}
