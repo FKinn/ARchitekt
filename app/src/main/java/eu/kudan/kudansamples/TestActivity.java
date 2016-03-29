@@ -7,30 +7,33 @@ import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
-
-
+import com.jme3.math.Vector3f;
 import eu.kudan.kudan.*;
 
 public class TestActivity extends ARActivity implements ARImageTrackableListener, GestureDetector.OnGestureListener{
 
-	public ARModelNode modelNode;
-
+	ARImageNode targetImageNode;
+	ARModelNode modelNode;
 	private GestureDetectorCompat gDetector;
 
+	private ARBITRACK_STATE arbitrack_state;
+
+	enum ARBITRACK_STATE {
+		ARBI_STOPPED,
+		ARBI_PLACEMENT,
+		ARBI_TRACKING
+	}
 
 
 	public void onCreate(Bundle savedInstanceState) {
 		// gesture
 		this.gDetector = new GestureDetectorCompat(this,this);
 
-
-
-
 		// set api key for this package name.
 		ARAPIKey key = ARAPIKey.getInstance();
 		key.setAPIKey("GAWAE-FBVCC-XA8ST-GQVZV-93PQB-X7SBD-P6V4W-6RS9C-CQRLH-78YEU-385XP-T6MCG-2CNWB-YK8SR-8UUQ");
 		super.onCreate(savedInstanceState);
-
+		this.arbitrack_state = ARBITRACK_STATE.ARBI_PLACEMENT;
 
 
 	}
@@ -39,48 +42,10 @@ public class TestActivity extends ARActivity implements ARImageTrackableListener
 
 
 		//TEST
-
-		//setupModel();
+		super.setup();
+		setupModel();
 		setupArbiTrack();
-		//setupLabel();
 
-
-
-		/*
-		// create a trackable from a bundled image.
-		ARImageTrackable wavesTrackable = new ARImageTrackable("waves");
-		wavesTrackable.loadFromAsset("waves.png");
-		
-		// create video texture.
-		ARVideoTexture videoTexture = new ARVideoTexture();
-		videoTexture.loadFromAsset("waves.mp4");
-		ARVideoNode videoNode = new ARVideoNode(videoTexture);
-		
-		// add video to the waves trackable.
-		wavesTrackable.getWorld().addChild(videoNode);
-
-
-		// load a set of trackables from a bundled file.
-		ARTrackableSet trackableSet = new ARTrackableSet();
-		trackableSet.loadFromAsset("demo.KARMarker");
-
-
-		ARImageTracker tracker = ARImageTracker.getInstance();
-		
-		// add our trackables to the tracker.
-		tracker.addTrackableSet(trackableSet);
-		tracker.addTrackable(wavesTrackable);
-		
-		// create an image node.
-		ARImageTrackable legoTrackable = tracker.findTrackable("lego");
-		ARImageNode imageNode = new ARImageNode("BatmanLegoMovie.png");
-		
-		// make it smaller.
-		imageNode.scaleBy(0.5f, 0.5f, 0.5f);
-		
-		// add it to the lego trackable.
-		legoTrackable.getWorld().addChild(imageNode);
-		*/
 
 
 	}
@@ -89,63 +54,63 @@ public class TestActivity extends ARActivity implements ARImageTrackableListener
 
 	private void setupModel(){
 
-		// Import model from file.
-		ARModelImporter modelImport = new ARModelImporter();
-		modelImport.loadFromAsset("NeugereutModellTreppeRampe.jet");
-		modelNode = (ARModelNode) modelImport.getNode();
-
+		ARModelImporter importer = new ARModelImporter();
+		importer.loadFromAsset("bloodhound.jet");
+		this.modelNode = (ARModelNode) importer.getNode();
+		ARTexture2D texture2D = new ARTexture2D();
+		texture2D.loadFromAsset("bloodhound.png");
+		ARLightMaterial material = new ARLightMaterial();
+		material.setTexture(texture2D);
+		material.setDiffuse(0.2f, 0.2f, 0.2f);
+		material.setAmbient(0.8f, 0.8f, 0.8f);
+		material.setSpecular(0.3f, 0.3f, 0.3f);
+		material.setShininess(20.0f);
+		material.setReflectivity(0.15f);
+		Vector3f lightDirection = new Vector3f(0.0f, -1.0f, 0.0f);
+		material.setCubeTexture(new ARTexture3D("chrome_b.png", "chrome_f.png", "chrome_u.png", "chrome_d.png", "chrome_r.png", "chrome_l.png"));
+		for (ARMeshNode meshNode : importer.getMeshNodes()) {
+			meshNode.setMaterial(material);
+			meshNode.setLightDirection(lightDirection);
+		}
+		this.modelNode.scaleByUniform(6.0f);
+		this.modelNode.setVisible(true);
 
 	}
 
 	private void setupArbiTrack(){
 
-		// Initialise gyro placement. Gyro placement positions content on a virtual floor plane where the device is aiming.
 		ARGyroPlaceManager gyroPlaceManager = ARGyroPlaceManager.getInstance();
 		gyroPlaceManager.initialise();
-
-		// Set up the target node on which the model is placed.
-		ARNode targetNode = new ARNode();
-		gyroPlaceManager.getWorld().addChild(targetNode);
-
-		// Add a visual reticule to the target node for the user.
-		ARImageNode targetImageNode = new ARImageNode("target.png");
-		targetNode.addChild(targetImageNode);
-
-		// Scale and rotate the image to the correct transformation.
-		targetImageNode.scaleByUniform(0.1f);
-		targetImageNode.rotateByDegrees(90, 1, 0, 0);
-
-		// Initialise the arbiTracker, do not start until user placement.
-		ARArbiTrack slamTracker = ARArbiTrack.getInstance();
-		slamTracker.initialise();
-
-		// Set the arbiTracker target node to the node moved by the user.
-		slamTracker.setTargetNode(targetNode);
-
-
-
-		//slamTracker.getWorld().addChild(modelNode);
-
-
+		this.targetImageNode = new ARImageNode("target.png");
+		gyroPlaceManager.getWorld().addChild(this.targetImageNode);
+		ARArbiTrack arbiTrack = ARArbiTrack.getInstance();
+		arbiTrack.initialise();
+		arbiTrack.setTargetNode(this.targetImageNode);
+		this.targetImageNode.scaleByUniform(0.3f);
+		this.targetImageNode.setVisible(true);
+		arbiTrack.getTargetNode().rotateByDegrees(90.0f, 1.0f, 0.0f, 0.0f);
+		arbiTrack.getWorld().addChild(this.modelNode);
 	}
 
-	private void setupLabel() {
-
-	}
 
 	private void tapGesture() {
 
-		ARArbiTrack slamTracker = ARArbiTrack.getInstance();
+		ARArbiTrack arbiTrack = ARArbiTrack.getInstance();
 
-		if(!slamTracker.getIsTracking()){
-			slamTracker.start();
-			slamTracker.getTargetNode().setVisible(false);
-			this.modelNode.setScale(1,1,1);
+		if(arbitrack_state == ARBITRACK_STATE.ARBI_PLACEMENT){
+			arbiTrack.getTargetNode().setVisible(false);
+			this.modelNode.setPosition(arbiTrack.getWorld().getFullTransform().invert().mult(this.modelNode.getFullTransform().mult(new Vector3f(0.0f, 0.0f, 0.0f))));
+			arbiTrack.getWorld().setVisible(true);
+			arbiTrack.start();
+			//b.setText("Stop Tracking");
+			this.arbitrack_state = ARBITRACK_STATE.ARBI_TRACKING;
 
-		} else if(slamTracker.getIsTracking()){
-			slamTracker.stop();
-			slamTracker.getTargetNode().setVisible(true);
-
+		} else if(arbitrack_state == ARBITRACK_STATE.ARBI_TRACKING){
+			arbiTrack.getTargetNode().setPosition(arbiTrack.getWorld().getFullTransform().invert().mult(this.modelNode.getFullTransform().mult(new Vector3f(0.0f, 0.0f, 0.0f))));
+			arbiTrack.getTargetNode().setVisible(true);
+			arbiTrack.stop();
+			//b.setText("Start Tracking");
+			this.arbitrack_state = ARBITRACK_STATE.ARBI_PLACEMENT;
 		}
 	}
 
@@ -201,6 +166,7 @@ public class TestActivity extends ARActivity implements ARImageTrackableListener
 
 	@Override
 	public boolean onSingleTapUp(MotionEvent e) {
+		tapGesture();
 		Log.i("KudanSamples", "SingleTap");
 		return false;
 	}
