@@ -1,23 +1,23 @@
 [
     {
-        "outputFile": "G:\\BA\\App\\Workspace\\ARchitekt\\app\\build\\intermediates\\res\\merged\\debug\\values\\values.xml",
+        "outputFile": "D:\\Workspace\\GitHub\\ARchitekt\\app\\build\\intermediates\\res\\merged\\debug\\values\\values.xml",
         "map": [
             {
                 "to": {
                     "startLine": 2,
                     "startColumn": 4,
                     "startOffset": 55,
-                    "endColumn": 49,
-                    "endOffset": 100
+                    "endColumn": 46,
+                    "endOffset": 97
                 },
                 "from": {
-                    "file": "G:\\BA\\App\\Workspace\\ARchitekt\\app\\src\\main\\res\\values\\strings.xml",
+                    "file": "D:\\Workspace\\GitHub\\ARchitekt\\app\\src\\main\\res\\values\\strings.xml",
                     "position": {
                         "startLine": 2,
                         "startColumn": 4,
-                        "startOffset": 17,
-                        "endColumn": 49,
-                        "endOffset": 62
+                        "startOffset": 19,
+                        "endColumn": 46,
+                        "endOffset": 61
                     }
                 }
             },
@@ -25,42 +25,26 @@
                 "to": {
                     "startLine": 3,
                     "startColumn": 4,
-                    "startOffset": 105,
+                    "startOffset": 102,
                     "endLine": 9,
                     "endColumn": 12,
-                    "endOffset": 391
+                    "endOffset": 388
                 },
                 "from": {
-                    "file": "G:\\BA\\App\\Workspace\\ARchitekt\\app\\src\\main\\res\\values\\styles.xml",
-                    "position": {
-                        "startLine": 6,
-                        "startColumn": 4,
-                        "startOffset": 186,
-                        "endLine": 12,
-                        "endColumn": 12,
-                        "endOffset": 472
-                    }
+                    "file": "D:\\Workspace\\GitHub\\ARchitekt\\app\\src\\main\\res\\values\\styles.xml"
                 }
             },
             {
                 "to": {
                     "startLine": 10,
                     "startColumn": 4,
-                    "startOffset": 396,
+                    "startOffset": 393,
                     "endLine": 12,
                     "endColumn": 12,
-                    "endOffset": 551
+                    "endOffset": 548
                 },
                 "from": {
-                    "file": "G:\\BA\\App\\Workspace\\ARchitekt\\app\\src\\main\\res\\values\\styles.xml",
-                    "position": {
-                        "startLine": 15,
-                        "startColumn": 4,
-                        "startOffset": 510,
-                        "endLine": 17,
-                        "endColumn": 12,
-                        "endOffset": 665
-                    }
+                    "file": "D:\\Workspace\\GitHub\\ARchitekt\\app\\src\\main\\res\\values\\styles.xml"
                 }
             }
         ]

@@ -1,6 +1,6 @@
 [
     {
-        "outputFile": "G:\\BA\\App\\Workspace\\ARchitekt\\app\\build\\intermediates\\res\\merged\\debug\\values-v14\\values-v14.xml",
+        "outputFile": "D:\\Workspace\\GitHub\\ARchitekt\\app\\build\\intermediates\\res\\merged\\debug\\values-v14\\values-v14.xml",
         "map": [
             {
                 "to": {
@@ -12,14 +12,14 @@
                     "endOffset": 201
                 },
                 "from": {
-                    "file": "G:\\BA\\App\\Workspace\\ARchitekt\\app\\src\\main\\res\\values-v14\\styles.xml",
+                    "file": "D:\\Workspace\\GitHub\\ARchitekt\\app\\src\\main\\res\\values-v14\\styles.xml",
                     "position": {
                         "startLine": 7,
                         "startColumn": 4,
-                        "startOffset": 220,
+                        "startOffset": 227,
                         "endLine": 9,
                         "endColumn": 12,
-                        "endOffset": 366
+                        "endOffset": 375
                     }
                 }
             }

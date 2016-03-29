@@ -41,12 +41,12 @@ public class TestActivity extends ARActivity implements ARImageTrackableListener
 		//TEST
 
 		//setupModel();
-		//setupArbiTrack();
+		setupArbiTrack();
 		//setupLabel();
 
 
 
-
+		/*
 		// create a trackable from a bundled image.
 		ARImageTrackable wavesTrackable = new ARImageTrackable("waves");
 		wavesTrackable.loadFromAsset("waves.png");
@@ -80,7 +80,7 @@ public class TestActivity extends ARActivity implements ARImageTrackableListener
 		
 		// add it to the lego trackable.
 		legoTrackable.getWorld().addChild(imageNode);
-
+		*/
 
 
 	}
@@ -124,7 +124,7 @@ public class TestActivity extends ARActivity implements ARImageTrackableListener
 
 
 
-		slamTracker.getWorld().addChild(modelNode);
+		//slamTracker.getWorld().addChild(modelNode);
 
 
 	}
