@@ -2,11 +2,12 @@ package eu.kudan.kudansamples;
 
 import android.os.Bundle;
 import android.support.v4.view.GestureDetectorCompat;
-import android.view.GestureDetector.SimpleOnGestureListener;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
-import android.view.View;
+import android.view.ScaleGestureDetector;
+
+
 import com.jme3.math.Vector3f;
 import eu.kudan.kudan.*;
 
@@ -19,15 +20,22 @@ public class TestActivity extends ARActivity implements GestureDetector.OnGestur
 	private ARBITRACK_STATE arbitrack_state;
 
 	enum ARBITRACK_STATE {
-		ARBI_STOPPED,
 		ARBI_PLACEMENT,
 		ARBI_TRACKING
 	}
 
 
+	private ScaleGestureDetector mScaleDetector;
+	private float mScaleFactor = 1.f;
+
+
+
+
 	public void onCreate(Bundle savedInstanceState) {
 		// gesture
 		this.gDetector = new GestureDetectorCompat(this,this);
+
+		mScaleDetector = new ScaleGestureDetector(this.getApplicationContext(), new ScaleListener());
 
 		// set api key for this package name.
 		ARAPIKey key = ARAPIKey.getInstance();
@@ -36,6 +44,20 @@ public class TestActivity extends ARActivity implements GestureDetector.OnGestur
 		this.arbitrack_state = ARBITRACK_STATE.ARBI_PLACEMENT;
 
 
+	}
+
+	private class ScaleListener
+			extends ScaleGestureDetector.SimpleOnScaleGestureListener {
+		@Override
+		public boolean onScale(ScaleGestureDetector detector) {
+			mScaleFactor *= detector.getScaleFactor();
+			Log.i("KudanSamples", "Scale");
+			// Don't let the object get too small or too large.
+			mScaleFactor = Math.max(0.1f, Math.min(mScaleFactor, 5.0f));
+
+			//invalidate();
+			return true;
+		}
 	}
 
 	public void setup() {
@@ -112,9 +134,9 @@ public class TestActivity extends ARActivity implements GestureDetector.OnGestur
 		}
 	}
 
-	private void pinchGesture(){
+	private void pinchGesture(float mScaleFactor){
 
-
+		this.modelNode.scaleByUniform(mScaleFactor);
 	}
 
 	private void panGesture(float distanceX){
@@ -161,28 +183,10 @@ public class TestActivity extends ARActivity implements GestureDetector.OnGestur
 
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
-
+		this.mScaleDetector.onTouchEvent(event);
 		this.gDetector.onTouchEvent(event);
 		return super.onTouchEvent(event);
 	}
-
-	/*/Scale gesture
-	@Override
-	public boolean onScale(ScaleGestureDetector detector) {
-
-		return false;
-	}
-
-	@Override
-	public boolean onScaleBegin(ScaleGestureDetector detector) {
-		return false;
-	}
-
-	@Override
-	public void onScaleEnd(ScaleGestureDetector detector) {
-
-	}
-	*/
 	//endregion
 
 }
