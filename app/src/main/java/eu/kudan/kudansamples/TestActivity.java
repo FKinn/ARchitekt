@@ -2,15 +2,15 @@ package eu.kudan.kudansamples;
 
 import android.os.Bundle;
 import android.support.v4.view.GestureDetectorCompat;
+import android.view.GestureDetector.SimpleOnGestureListener;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
-import android.view.ScaleGestureDetector;
 import android.view.View;
 import com.jme3.math.Vector3f;
 import eu.kudan.kudan.*;
 
-public class TestActivity extends ARActivity implements ARImageTrackableListener, GestureDetector.OnGestureListener{
+public class TestActivity extends ARActivity implements GestureDetector.OnGestureListener{
 
 	ARImageNode targetImageNode;
 	ARModelNode modelNode;
@@ -47,9 +47,7 @@ public class TestActivity extends ARActivity implements ARImageTrackableListener
 		setupArbiTrack();
 
 
-
 	}
-
 
 
 	private void setupModel(){
@@ -66,12 +64,12 @@ public class TestActivity extends ARActivity implements ARImageTrackableListener
 		material.setSpecular(0.3f, 0.3f, 0.3f);
 		material.setShininess(20.0f);
 		material.setReflectivity(0.15f);
-		Vector3f lightDirection = new Vector3f(0.0f, -1.0f, 0.0f);
-		material.setCubeTexture(new ARTexture3D("chrome_b.png", "chrome_f.png", "chrome_u.png", "chrome_d.png", "chrome_r.png", "chrome_l.png"));
+		//Vector3f lightDirection = new Vector3f(0.0f, -1.0f, 0.0f);
 		for (ARMeshNode meshNode : importer.getMeshNodes()) {
 			meshNode.setMaterial(material);
-			meshNode.setLightDirection(lightDirection);
+			//meshNode.setLightDirection(lightDirection);
 		}
+
 		this.modelNode.scaleByUniform(6.0f);
 		this.modelNode.setVisible(true);
 
@@ -119,37 +117,11 @@ public class TestActivity extends ARActivity implements ARImageTrackableListener
 
 	}
 
-	private void panGesture(){
+	private void panGesture(float distanceX){
 
-		/*
-		float x = 0; //float x = [gesture translationInView:self.cameraView].x; Objective C
-
-
-		float diff = x - lastPanX;
-		float deg = diff *0.5;
-		synchronized (ARRenderer.getInstance()){
-			this.modelNode.rotateByDegrees(deg,0,1,0);
-		}
-		*/
-	}
+		this.modelNode.rotateByDegrees(distanceX, 0.0f, -1.0f, 0.0f);
 
 
-
-
-	@Override
-	public void didDetect(ARImageTrackable trackable) {
-		Log.i("KudanSamples", "detected " + trackable.getName());
-	}
-
-
-	@Override
-	public void didTrack(ARImageTrackable trackable) {
-//		Log.i("KudanSamples", "tracked");
-	}
-
-	@Override
-	public void didLose(ARImageTrackable trackable) {
-		Log.i("KudanSamples", "lost " + trackable.getName());
 	}
 
 
@@ -173,6 +145,7 @@ public class TestActivity extends ARActivity implements ARImageTrackableListener
 
 	@Override
 	public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+		panGesture(distanceX);
 		return false;
 	}
 
@@ -189,12 +162,7 @@ public class TestActivity extends ARActivity implements ARImageTrackableListener
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
 
-		//boolean handled = gestureScale.onTouchEvent(event);
-
-		//if(!handled){
-			this.gDetector.onTouchEvent(event);
-		//}
-		// Be sure to call the superclass implementation
+		this.gDetector.onTouchEvent(event);
 		return super.onTouchEvent(event);
 	}
 
