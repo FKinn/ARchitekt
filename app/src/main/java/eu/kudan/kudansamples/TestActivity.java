@@ -92,7 +92,7 @@ public class TestActivity extends ARActivity implements GestureDetector.OnGestur
 		arbiTrack.getWorld().addChild(this.modelNode);
 	}
 
-
+	//region gesture methods
 	private void tapGesture() {
 
 		ARArbiTrack arbiTrack = ARArbiTrack.getInstance();
@@ -143,9 +143,9 @@ public class TestActivity extends ARActivity implements GestureDetector.OnGestur
 
 
 	}
+	//endregion
 
-
-	//region Gesture listener
+	//region gesture listener
 	@Override
 	public boolean onDown(MotionEvent e) {
 		return false;
@@ -171,6 +171,7 @@ public class TestActivity extends ARActivity implements GestureDetector.OnGestur
 
 	@Override
 	public void onLongPress(MotionEvent e) {
+		Log.i("KudanSamples", "LongPress");
 
 	}
 
@@ -185,7 +186,6 @@ public class TestActivity extends ARActivity implements GestureDetector.OnGestur
 		this.gDetector.onTouchEvent(event);
 		return super.onTouchEvent(event);
 	}
-	//endregion
 
 
 	private class ScaleListener
@@ -197,8 +197,6 @@ public class TestActivity extends ARActivity implements GestureDetector.OnGestur
 			// Don't let the object get too small or too large.
 			mScaleFactor = Math.max(0.1f, Math.min(mScaleFactor, 5.0f));
 			pinchGesture(mScaleFactor);
-			//invalidate();
-
 			return true;
 
 		}
@@ -207,14 +205,12 @@ public class TestActivity extends ARActivity implements GestureDetector.OnGestur
 
 			lastScale = 1;
 			arbitrack_state = ARBITRACK_STATE.ARBI_SCALING;
-			mScaleFactor *= detector.getScaleFactor();
-			Log.i("KudanSamples", "ScaleBegin");
-			Log.i("KudanSamples", Float.toString(mScaleFactor));
 			return true;
 		}
 		public void onScaleEnd(ScaleGestureDetector detector){
 			arbitrack_state = ARBITRACK_STATE.ARBI_TRACKING;
 		}
 	}
+	//endregion
 
 }
