@@ -1,5 +1,9 @@
 [
     {
+        "merged": "G:\\BA\\App\\Workspace\\ARchitekt\\app\\build\\intermediates\\res\\merged\\debug\\drawable-mdpi-v4\\ic_launcher.png",
+        "source": "G:\\BA\\App\\Workspace\\ARchitekt\\app\\src\\main\\res\\drawable-mdpi\\ic_launcher.png"
+    },
+    {
         "merged": "D:\\Workspace\\GitHub\\ARchitekt\\app\\build\\intermediates\\res\\merged\\debug\\drawable-mdpi-v4\\ic_launcher.png",
         "source": "D:\\Workspace\\GitHub\\ARchitekt\\app\\src\\main\\res\\drawable-mdpi\\ic_launcher.png"
     }

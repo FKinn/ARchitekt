@@ -16,20 +16,16 @@ public class TestActivity extends ARActivity implements GestureDetector.OnGestur
 	ARImageNode targetImageNode;
 	ARModelNode modelNode;
 	private GestureDetectorCompat gDetector;
-
+	private float lastScale = 0;
 	private ARBITRACK_STATE arbitrack_state;
-
-	enum ARBITRACK_STATE {
-		ARBI_PLACEMENT,
-		ARBI_TRACKING
-	}
-
-
 	private ScaleGestureDetector mScaleDetector;
 	private float mScaleFactor = 1.f;
 
-
-
+	enum ARBITRACK_STATE {
+		ARBI_SCALING,
+		ARBI_PLACEMENT,
+		ARBI_TRACKING
+	}
 
 	public void onCreate(Bundle savedInstanceState) {
 		// gesture
@@ -46,28 +42,12 @@ public class TestActivity extends ARActivity implements GestureDetector.OnGestur
 
 	}
 
-	private class ScaleListener
-			extends ScaleGestureDetector.SimpleOnScaleGestureListener {
-		@Override
-		public boolean onScale(ScaleGestureDetector detector) {
-			mScaleFactor *= detector.getScaleFactor();
-			Log.i("KudanSamples", "Scale");
-			// Don't let the object get too small or too large.
-			mScaleFactor = Math.max(0.1f, Math.min(mScaleFactor, 5.0f));
-
-			//invalidate();
-			return true;
-		}
-	}
 
 	public void setup() {
 
-
-		//TEST
 		super.setup();
 		setupModel();
 		setupArbiTrack();
-
 
 	}
 
@@ -122,26 +102,44 @@ public class TestActivity extends ARActivity implements GestureDetector.OnGestur
 			this.modelNode.setPosition(arbiTrack.getWorld().getFullTransform().invert().mult(this.modelNode.getFullTransform().mult(new Vector3f(0.0f, 0.0f, 0.0f))));
 			arbiTrack.getWorld().setVisible(true);
 			arbiTrack.start();
-			//b.setText("Stop Tracking");
 			this.arbitrack_state = ARBITRACK_STATE.ARBI_TRACKING;
 
 		} else if(arbitrack_state == ARBITRACK_STATE.ARBI_TRACKING){
 			arbiTrack.getTargetNode().setPosition(arbiTrack.getWorld().getFullTransform().invert().mult(this.modelNode.getFullTransform().mult(new Vector3f(0.0f, 0.0f, 0.0f))));
 			arbiTrack.getTargetNode().setVisible(true);
 			arbiTrack.stop();
-			//b.setText("Start Tracking");
 			this.arbitrack_state = ARBITRACK_STATE.ARBI_PLACEMENT;
+
 		}
 	}
 
 	private void pinchGesture(float mScaleFactor){
+		if(arbitrack_state == ARBITRACK_STATE.ARBI_SCALING) {
 
-		this.modelNode.scaleByUniform(mScaleFactor);
+			float scaleFactor = mScaleFactor;
+
+			scaleFactor = 1 - (this.lastScale - scaleFactor);
+
+			lastScale = mScaleFactor;
+
+			synchronized (ARRenderer.getInstance()){
+				this.modelNode.scaleByUniform(scaleFactor);
+			}
+
+
+		}
+
+
 	}
 
 	private void panGesture(float distanceX){
 
-		this.modelNode.rotateByDegrees(distanceX, 0.0f, -1.0f, 0.0f);
+		if(arbitrack_state == ARBITRACK_STATE.ARBI_TRACKING){
+			synchronized (ARRenderer.getInstance()){
+				this.modelNode.rotateByDegrees(distanceX, 0.0f, 1.0f, 0.0f);
+			}
+		}
+
 
 
 	}
@@ -188,5 +186,35 @@ public class TestActivity extends ARActivity implements GestureDetector.OnGestur
 		return super.onTouchEvent(event);
 	}
 	//endregion
+
+
+	private class ScaleListener
+			extends ScaleGestureDetector.SimpleOnScaleGestureListener {
+		@Override
+		public boolean onScale(ScaleGestureDetector detector) {
+
+			mScaleFactor *= detector.getScaleFactor();
+			// Don't let the object get too small or too large.
+			mScaleFactor = Math.max(0.1f, Math.min(mScaleFactor, 5.0f));
+			pinchGesture(mScaleFactor);
+			//invalidate();
+
+			return true;
+
+		}
+		@Override
+		public boolean onScaleBegin(ScaleGestureDetector detector){
+
+			lastScale = 1;
+			arbitrack_state = ARBITRACK_STATE.ARBI_SCALING;
+			mScaleFactor *= detector.getScaleFactor();
+			Log.i("KudanSamples", "ScaleBegin");
+			Log.i("KudanSamples", Float.toString(mScaleFactor));
+			return true;
+		}
+		public void onScaleEnd(ScaleGestureDetector detector){
+			arbitrack_state = ARBITRACK_STATE.ARBI_TRACKING;
+		}
+	}
 
 }
