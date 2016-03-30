@@ -125,8 +125,6 @@ public class TestActivity extends ARActivity implements GestureDetector.OnGestur
 			synchronized (ARRenderer.getInstance()){
 				this.modelNode.scaleByUniform(scaleFactor);
 			}
-
-
 		}
 
 
@@ -139,7 +137,14 @@ public class TestActivity extends ARActivity implements GestureDetector.OnGestur
 				this.modelNode.rotateByDegrees(distanceX, 0.0f, 1.0f, 0.0f);
 			}
 		}
+		/*else if (arbitrack_state == ARBITRACK_STATE.ARBI_PLACEMENT){
 
+			ARArbiTrack arbiTrack = ARArbiTrack.getInstance();
+			Vector3f position = arbiTrack.getTargetNode().getPosition();
+			arbiTrack.getTargetNode().setPosition(position.getX(),position.getY() - distanceX,position.getZ());
+
+		}
+		*/
 
 
 	}
