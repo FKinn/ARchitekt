@@ -22,6 +22,7 @@ public class TestActivity extends ARActivity implements GestureDetector.OnGestur
 	private float mScaleFactor = 1.f;
 
 	enum ARBITRACK_STATE {
+        ARBI_POSITIONING,
 		ARBI_SCALING,
 		ARBI_PLACEMENT,
 		ARBI_TRACKING
@@ -111,21 +112,21 @@ public class TestActivity extends ARActivity implements GestureDetector.OnGestur
 
 	}
 
-	private void panGesture(float distanceX){
+	private void panGesture(float distanceX,float distanceY){
 
 		if(arbitrack_state == ARBITRACK_STATE.ARBI_TRACKING){
 			synchronized (ARRenderer.getInstance()){
 				this.modelNode.rotateByDegrees(distanceX, 0.0f, 1.0f, 0.0f);
 			}
 		}
-		/*else if (arbitrack_state == ARBITRACK_STATE.ARBI_PLACEMENT){
+		else if (arbitrack_state == ARBITRACK_STATE.ARBI_POSITIONING) {
+            Vector3f position = this.modelNode.getPosition();
+            synchronized (ARRenderer.getInstance()) {
+                this.modelNode.setPosition(position.getX(), position.getY() - distanceY, position.getZ());
+                this.modelNode.setPosition(position.getX() - distanceX, position.getY(), position.getZ());
+            }
+        }
 
-			ARArbiTrack arbiTrack = ARArbiTrack.getInstance();
-			Vector3f position = arbiTrack.getTargetNode().getPosition();
-			arbiTrack.getTargetNode().setPosition(position.getX(),position.getY() - distanceX,position.getZ());
-
-		}
-		*/
 
 
 	}
@@ -151,12 +152,17 @@ public class TestActivity extends ARActivity implements GestureDetector.OnGestur
 
 	@Override
 	public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-		panGesture(distanceX);
+		panGesture(distanceX,distanceY);
 		return false;
 	}
 
 	@Override
 	public void onLongPress(MotionEvent e) {
+        if(arbitrack_state == ARBITRACK_STATE.ARBI_TRACKING){
+            arbitrack_state = ARBITRACK_STATE.ARBI_POSITIONING;
+        } else if (arbitrack_state == ARBITRACK_STATE.ARBI_POSITIONING) {
+            arbitrack_state = ARBITRACK_STATE.ARBI_TRACKING;
+        }
 		Log.i("KudanSamples", "LongPress");
 
 	}
