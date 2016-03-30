@@ -53,28 +53,9 @@ public class TestActivity extends ARActivity implements GestureDetector.OnGestur
 
 
 	private void setupModel(){
-
-		ARModelImporter importer = new ARModelImporter();
-		importer.loadFromAsset("bloodhound.jet");
-		this.modelNode = (ARModelNode) importer.getNode();
-		ARTexture2D texture2D = new ARTexture2D();
-		texture2D.loadFromAsset("bloodhound.png");
-		ARLightMaterial material = new ARLightMaterial();
-		material.setTexture(texture2D);
-		material.setDiffuse(0.2f, 0.2f, 0.2f);
-		material.setAmbient(0.8f, 0.8f, 0.8f);
-		material.setSpecular(0.3f, 0.3f, 0.3f);
-		material.setShininess(20.0f);
-		material.setReflectivity(0.15f);
-		//Vector3f lightDirection = new Vector3f(0.0f, -1.0f, 0.0f);
-		for (ARMeshNode meshNode : importer.getMeshNodes()) {
-			meshNode.setMaterial(material);
-			//meshNode.setLightDirection(lightDirection);
-		}
-
-		this.modelNode.scaleByUniform(6.0f);
-		this.modelNode.setVisible(true);
-
+		//setupBloodhound();
+		setupWall();
+		//setupNeugereut();
 	}
 
 	private void setupArbiTrack(){
@@ -217,5 +198,98 @@ public class TestActivity extends ARActivity implements GestureDetector.OnGestur
 		}
 	}
 	//endregion
+
+	//region Models
+	private void setupBloodhound() {
+		ARModelImporter importer = new ARModelImporter();
+		importer.loadFromAsset("bloodhound.jet");
+		this.modelNode = (ARModelNode) importer.getNode();
+		ARTexture2D texture2D = new ARTexture2D();
+		texture2D.loadFromAsset("bloodhound.png");
+		ARLightMaterial material = new ARLightMaterial();
+		material.setTexture(texture2D);
+
+		material.setDiffuse(0.2f, 0.2f, 0.2f);
+		material.setAmbient(0.8f, 0.8f, 0.8f);
+		material.setSpecular(0.3f, 0.3f, 0.3f);
+		material.setShininess(20.0f);
+		material.setReflectivity(0.15f);
+
+		//Vector3f lightDirection = new Vector3f(0.0f, -1.0f, 0.0f);
+		for (ARMeshNode meshNode : importer.getMeshNodes()) {
+			meshNode.setMaterial(material);
+			//meshNode.setLightDirection(lightDirection);
+		}
+
+		this.modelNode.scaleByUniform(6.0f);
+		this.modelNode.setVisible(true);
+	}
+
+
+	private void setupWall(){
+
+
+		ARModelImporter importer = new ARModelImporter();
+		importer.loadFromAsset("wall.jet");
+		this.modelNode = (ARModelNode) importer.getNode();
+		ARTexture2D texture2D = new ARTexture2D();
+		texture2D.loadFromAsset("wall.png");
+		ARTextureMaterial material = new ARTextureMaterial();
+		material.setTexture(texture2D);
+		for (ARMeshNode meshNode : importer.getMeshNodes()) {
+			meshNode.setMaterial(material);
+		}
+
+		/* alternative to give every meshNode a different texture
+		for (int i = 0; i < importer.getMeshNodes().size(); i++){
+			ARTexture2D texture2D = new ARTexture2D();
+			texture2D.loadFromAsset("army"+i+".png");
+			ARTextureMaterial material = new ARTextureMaterial();
+			material.setTexture(texture2D);
+			importer.getMeshNodes().get(i).setMaterial(material);
+		}
+		*/
+		this.modelNode.scaleByUniform(6.0f);
+		this.modelNode.setVisible(true);
+
+	}
+
+
+	private void setupNeugereut() {
+		ARModelImporter importer = new ARModelImporter();
+		importer.loadFromAsset("neu.jet");
+		this.modelNode = (ARModelNode) importer.getNode();
+
+
+		/*
+		ARTexture2D texture2D = new ARTexture2D();
+		texture2D.loadFromAsset("wall.png");
+		ARTextureMaterial material = new ARTextureMaterial();
+		material.setTexture(texture2D);
+
+
+		for (ARMeshNode meshNode : importer.getMeshNodes()) {
+			meshNode.setMaterial(material);
+		}
+		*/
+		Log.i("KudanSamples", "Size of meshList: " + Integer.toString(importer.getMeshNodes().size()));
+
+        ARTexture2D texture2D = new ARTexture2D();
+        ARTextureMaterial material = new ARTextureMaterial();
+		/* alternative to give every meshNode a different texture */
+		for (int i = 0; i < importer.getMeshNodes().size(); i++){
+			texture2D.loadFromAsset("beton1.png");
+
+			material.setTexture(texture2D);
+			importer.getMeshNodes().get(i).setMaterial(material);
+		}
+
+		this.modelNode.scaleByUniform(6.0f);
+		this.modelNode.setVisible(true);
+
+	}
+
+	//endregion
+
 
 }
