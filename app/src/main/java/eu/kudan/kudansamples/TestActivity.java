@@ -55,8 +55,9 @@ public class TestActivity extends ARActivity implements GestureDetector.OnGestur
 
 	private void setupModel(){
 		//setupBloodhound();
-		setupWall();
-		//setupNeugereut();
+		//setupWall();
+		setupNeugereut();
+        //setupFence();
 	}
 
 	private void setupArbiTrack(){
@@ -116,13 +117,14 @@ public class TestActivity extends ARActivity implements GestureDetector.OnGestur
 
 		if(arbitrack_state == ARBITRACK_STATE.ARBI_TRACKING){
 			synchronized (ARRenderer.getInstance()){
-				this.modelNode.rotateByDegrees(distanceX, 0.0f, 1.0f, 0.0f);
+				this.modelNode.rotateByDegrees(distanceY, 0.0f, 1.0f, 0.0f);
+                //this.modelNode.rotateByDegrees(distanceX, 1.0f, 0.0f, 0.0f);
 			}
 		}
 		else if (arbitrack_state == ARBITRACK_STATE.ARBI_POSITIONING) {
             Vector3f position = this.modelNode.getPosition();
             synchronized (ARRenderer.getInstance()) {
-                this.modelNode.setPosition(position.getX(), position.getY() - distanceY, position.getZ());
+                this.modelNode.setPosition(position.getX(), position.getY() + distanceY, position.getZ());
                 this.modelNode.setPosition(position.getX() - distanceX, position.getY(), position.getZ());
             }
         }
@@ -146,7 +148,6 @@ public class TestActivity extends ARActivity implements GestureDetector.OnGestur
 	@Override
 	public boolean onSingleTapUp(MotionEvent e) {
 		tapGesture();
-		Log.i("KudanSamples", "SingleTap");
 		return false;
 	}
 
@@ -163,7 +164,7 @@ public class TestActivity extends ARActivity implements GestureDetector.OnGestur
         } else if (arbitrack_state == ARBITRACK_STATE.ARBI_POSITIONING) {
             arbitrack_state = ARBITRACK_STATE.ARBI_TRACKING;
         }
-		Log.i("KudanSamples", "LongPress");
+		//Log.i("KudanSamples", "LongPress");
 
 	}
 
@@ -194,7 +195,6 @@ public class TestActivity extends ARActivity implements GestureDetector.OnGestur
 		}
 		@Override
 		public boolean onScaleBegin(ScaleGestureDetector detector){
-
 			lastScale = 1;
 			arbitrack_state = ARBITRACK_STATE.ARBI_SCALING;
 			return true;
@@ -263,37 +263,60 @@ public class TestActivity extends ARActivity implements GestureDetector.OnGestur
 
 	private void setupNeugereut() {
 		ARModelImporter importer = new ARModelImporter();
-		importer.loadFromAsset("neu.jet");
+		importer.loadFromAsset("neugereut.jet");
 		this.modelNode = (ARModelNode) importer.getNode();
 
-
-		/*
+        /*
 		ARTexture2D texture2D = new ARTexture2D();
-		texture2D.loadFromAsset("wall.png");
+		texture2D.loadFromAsset("beton1.png");
 		ARTextureMaterial material = new ARTextureMaterial();
 		material.setTexture(texture2D);
-
 
 		for (ARMeshNode meshNode : importer.getMeshNodes()) {
 			meshNode.setMaterial(material);
 		}
-		*/
-		Log.i("KudanSamples", "Size of meshList: " + Integer.toString(importer.getMeshNodes().size()));
+        */
 
-        ARTexture2D texture2D = new ARTexture2D();
-        ARTextureMaterial material = new ARTextureMaterial();
-		/* alternative to give every meshNode a different texture */
+        /* alternative to give every meshNode a different texture */
+        int u = 0;
 		for (int i = 0; i < importer.getMeshNodes().size(); i++){
-			texture2D.loadFromAsset("beton1.png");
-
+            if(u > 3 ){
+                u = 0;
+            }
+			ARTexture2D texture2D = new ARTexture2D();
+			texture2D.loadFromAsset("beton"+u+".png");
+			ARTextureMaterial material = new ARTextureMaterial();
 			material.setTexture(texture2D);
-			importer.getMeshNodes().get(i).setMaterial(material);
+            importer.getMeshNodes().get(i).setMaterial(material);
+            u++;
 		}
 
-		this.modelNode.scaleByUniform(6.0f);
+
+        this.modelNode.rotateByDegrees(-90, 1.0f, 0.0f, 0.0f);
+		this.modelNode.scaleByUniform(3.0f);
 		this.modelNode.setVisible(true);
 
 	}
+
+    private void setupFence(){
+        ARModelImporter importer = new ARModelImporter();
+        importer.loadFromAsset("fence.jet");
+        this.modelNode = (ARModelNode) importer.getNode();
+
+        String size = Integer.toString(importer.getMeshNodes().size());
+        Log.i("KudanSamples", "Meshnodes =" + size);
+		for (int i = 0; i < importer.getMeshNodes().size(); i++){
+			ARTexture2D texture2D = new ARTexture2D();
+            texture2D.loadFromAsset("fence" + i + ".png");
+			ARTextureMaterial material = new ARTextureMaterial();
+			material.setTexture(texture2D);
+            material.setTransparent(true);
+            importer.getMeshNodes().get(i).setMaterial(material);
+		}
+        //importer.getMeshNodes().get(0).getMesh()
+        this.modelNode.scaleByUniform(6.0f);
+        this.modelNode.setVisible(true);
+    }
 
 	//endregion
 
