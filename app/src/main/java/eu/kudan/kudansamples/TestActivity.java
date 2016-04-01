@@ -1,11 +1,13 @@
 package eu.kudan.kudansamples;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.view.GestureDetectorCompat;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
+import android.widget.Toast;
 
 
 import com.jme3.math.Vector3f;
@@ -13,20 +15,31 @@ import eu.kudan.kudan.*;
 
 public class TestActivity extends ARActivity implements GestureDetector.OnGestureListener{
 
+
+    //gestures
+    private ScaleGestureDetector mScaleDetector;
+    private GestureDetectorCompat gDetector;
+
+    //track states
+    private ARBITRACK_STATE arbitrack_state;
+    enum ARBITRACK_STATE {
+        ARBI_POSITIONING,
+        ARBI_SCALING,
+        ARBI_PLACEMENT,
+        ARBI_TRACKING
+    }
+
+
 	ARImageNode targetImageNode;
 	ARModelNode modelNode;
-	private GestureDetectorCompat gDetector;
+    ARArbiTrack arbiTrack;
 	private float lastScale = 0;
-	private ARBITRACK_STATE arbitrack_state;
-	private ScaleGestureDetector mScaleDetector;
 	private float mScaleFactor = 1.f;
 
-	enum ARBITRACK_STATE {
-        ARBI_POSITIONING,
-		ARBI_SCALING,
-		ARBI_PLACEMENT,
-		ARBI_TRACKING
-	}
+    // additional variables
+    Context context;
+
+
 
 	public void onCreate(Bundle savedInstanceState) {
 		// gesture
@@ -49,7 +62,7 @@ public class TestActivity extends ARActivity implements GestureDetector.OnGestur
 		super.setup();
 		setupModel();
 		setupArbiTrack();
-
+        context = getApplicationContext();
 	}
 
 
@@ -58,6 +71,7 @@ public class TestActivity extends ARActivity implements GestureDetector.OnGestur
 		//setupWall();
 		setupNeugereut();
         //setupFence();
+        Log.i("KudanSamples", "Neugereut model loaded" );
 	}
 
 	private void setupArbiTrack(){
@@ -66,7 +80,7 @@ public class TestActivity extends ARActivity implements GestureDetector.OnGestur
 		gyroPlaceManager.initialise();
 		this.targetImageNode = new ARImageNode("target.png");
 		gyroPlaceManager.getWorld().addChild(this.targetImageNode);
-		ARArbiTrack arbiTrack = ARArbiTrack.getInstance();
+		arbiTrack = ARArbiTrack.getInstance();
 		arbiTrack.initialise();
 		arbiTrack.setTargetNode(this.targetImageNode);
 		this.targetImageNode.scaleByUniform(0.3f);
@@ -77,9 +91,6 @@ public class TestActivity extends ARActivity implements GestureDetector.OnGestur
 
 	//region gesture methods
 	private void tapGesture() {
-
-		ARArbiTrack arbiTrack = ARArbiTrack.getInstance();
-
 		if(arbitrack_state == ARBITRACK_STATE.ARBI_PLACEMENT){
 			arbiTrack.getTargetNode().setVisible(false);
 			this.modelNode.setPosition(arbiTrack.getWorld().getFullTransform().invert().mult(this.modelNode.getFullTransform().mult(new Vector3f(0.0f, 0.0f, 0.0f))));
@@ -98,13 +109,9 @@ public class TestActivity extends ARActivity implements GestureDetector.OnGestur
 
 	private void pinchGesture(float mScaleFactor){
 		if(arbitrack_state == ARBITRACK_STATE.ARBI_SCALING) {
-
 			float scaleFactor = mScaleFactor;
-
 			scaleFactor = 1 - (this.lastScale - scaleFactor);
-
 			lastScale = mScaleFactor;
-
 			synchronized (ARRenderer.getInstance()){
 				this.modelNode.scaleByUniform(scaleFactor);
 			}
@@ -117,15 +124,14 @@ public class TestActivity extends ARActivity implements GestureDetector.OnGestur
 
 		if(arbitrack_state == ARBITRACK_STATE.ARBI_TRACKING){
 			synchronized (ARRenderer.getInstance()){
-				this.modelNode.rotateByDegrees(distanceY, 0.0f, 1.0f, 0.0f);
-                //this.modelNode.rotateByDegrees(distanceX, 1.0f, 0.0f, 0.0f);
+                this.modelNode.rotateByDegrees(distanceX, 0.0f, 0.0f, 1.0f);
 			}
 		}
 		else if (arbitrack_state == ARBITRACK_STATE.ARBI_POSITIONING) {
             Vector3f position = this.modelNode.getPosition();
             synchronized (ARRenderer.getInstance()) {
                 this.modelNode.setPosition(position.getX(), position.getY() + distanceY, position.getZ());
-                this.modelNode.setPosition(position.getX() - distanceX, position.getY(), position.getZ());
+                this.modelNode.setPosition(position.getX(), position.getY(), position.getZ() + distanceX);
             }
         }
 
@@ -170,12 +176,14 @@ public class TestActivity extends ARActivity implements GestureDetector.OnGestur
 
 	@Override
 	public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+
 		return false;
 	}
 
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
-		this.mScaleDetector.onTouchEvent(event);
+
+        this.mScaleDetector.onTouchEvent(event);
 		this.gDetector.onTouchEvent(event);
 		return super.onTouchEvent(event);
 	}
@@ -266,18 +274,10 @@ public class TestActivity extends ARActivity implements GestureDetector.OnGestur
 		importer.loadFromAsset("neugereut.jet");
 		this.modelNode = (ARModelNode) importer.getNode();
 
-        /*
-		ARTexture2D texture2D = new ARTexture2D();
-		texture2D.loadFromAsset("beton1.png");
-		ARTextureMaterial material = new ARTextureMaterial();
-		material.setTexture(texture2D);
-
-		for (ARMeshNode meshNode : importer.getMeshNodes()) {
-			meshNode.setMaterial(material);
-		}
-        */
-
-        /* alternative to give every meshNode a different texture */
+        /* alternative to give every meshNode a different texture
+        *
+        * u = workaround to get different textures on different nodes
+        * */
         int u = 0;
 		for (int i = 0; i < importer.getMeshNodes().size(); i++){
             if(u > 3 ){
@@ -304,7 +304,6 @@ public class TestActivity extends ARActivity implements GestureDetector.OnGestur
         this.modelNode = (ARModelNode) importer.getNode();
 
         String size = Integer.toString(importer.getMeshNodes().size());
-        Log.i("KudanSamples", "Meshnodes =" + size);
 		for (int i = 0; i < importer.getMeshNodes().size(); i++){
 			ARTexture2D texture2D = new ARTexture2D();
             texture2D.loadFromAsset("fence" + i + ".png");
