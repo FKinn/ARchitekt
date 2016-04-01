@@ -1,15 +1,11 @@
 package eu.kudan.kudansamples;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.view.GestureDetectorCompat;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
-import android.widget.Toast;
-
-
 import com.jme3.math.Vector3f;
 import eu.kudan.kudan.*;
 
@@ -20,7 +16,7 @@ public class TestActivity extends ARActivity implements GestureDetector.OnGestur
     private ScaleGestureDetector mScaleDetector;
     private GestureDetectorCompat gDetector;
 
-    //track states
+    //track state
     private ARBITRACK_STATE arbitrack_state;
     enum ARBITRACK_STATE {
         ARBI_POSITIONING,
@@ -29,16 +25,11 @@ public class TestActivity extends ARActivity implements GestureDetector.OnGestur
         ARBI_TRACKING
     }
 
-
 	ARImageNode targetImageNode;
 	ARModelNode modelNode;
     ARArbiTrack arbiTrack;
 	private float lastScale = 0;
 	private float mScaleFactor = 1.f;
-
-    // additional variables
-    Context context;
-
 
 
 	public void onCreate(Bundle savedInstanceState) {
@@ -60,18 +51,9 @@ public class TestActivity extends ARActivity implements GestureDetector.OnGestur
 	public void setup() {
 
 		super.setup();
-		setupModel();
+        this.modelNode = Models.setupModel("Neugereut");
 		setupArbiTrack();
-        context = getApplicationContext();
-	}
 
-
-	private void setupModel(){
-		//setupBloodhound();
-		//setupWall();
-		setupNeugereut();
-        //setupFence();
-        Log.i("KudanSamples", "Neugereut model loaded" );
 	}
 
 	private void setupArbiTrack(){
@@ -176,8 +158,7 @@ public class TestActivity extends ARActivity implements GestureDetector.OnGestur
 
 	@Override
 	public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-
-		return false;
+    		return false;
 	}
 
 	@Override
@@ -214,108 +195,6 @@ public class TestActivity extends ARActivity implements GestureDetector.OnGestur
 	//endregion
 
 	//region Models
-	private void setupBloodhound() {
-		ARModelImporter importer = new ARModelImporter();
-		importer.loadFromAsset("bloodhound.jet");
-		this.modelNode = (ARModelNode) importer.getNode();
-		ARTexture2D texture2D = new ARTexture2D();
-		texture2D.loadFromAsset("bloodhound.png");
-		ARLightMaterial material = new ARLightMaterial();
-		material.setTexture(texture2D);
-
-		material.setDiffuse(0.2f, 0.2f, 0.2f);
-		material.setAmbient(0.8f, 0.8f, 0.8f);
-		material.setSpecular(0.3f, 0.3f, 0.3f);
-		material.setShininess(20.0f);
-		material.setReflectivity(0.15f);
-
-		//Vector3f lightDirection = new Vector3f(0.0f, -1.0f, 0.0f);
-		for (ARMeshNode meshNode : importer.getMeshNodes()) {
-			meshNode.setMaterial(material);
-			//meshNode.setLightDirection(lightDirection);
-		}
-
-		this.modelNode.scaleByUniform(6.0f);
-		this.modelNode.setVisible(true);
-	}
-
-
-	private void setupWall(){
-
-
-		ARModelImporter importer = new ARModelImporter();
-		importer.loadFromAsset("wall.jet");
-		this.modelNode = (ARModelNode) importer.getNode();
-		ARTexture2D texture2D = new ARTexture2D();
-		texture2D.loadFromAsset("wall.png");
-		ARTextureMaterial material = new ARTextureMaterial();
-		material.setTexture(texture2D);
-		for (ARMeshNode meshNode : importer.getMeshNodes()) {
-			meshNode.setMaterial(material);
-		}
-
-		/* alternative to give every meshNode a different texture
-		for (int i = 0; i < importer.getMeshNodes().size(); i++){
-			ARTexture2D texture2D = new ARTexture2D();
-			texture2D.loadFromAsset("army"+i+".png");
-			ARTextureMaterial material = new ARTextureMaterial();
-			material.setTexture(texture2D);
-			importer.getMeshNodes().get(i).setMaterial(material);
-		}
-		*/
-		this.modelNode.scaleByUniform(6.0f);
-		this.modelNode.setVisible(true);
-
-	}
-
-
-	private void setupNeugereut() {
-		ARModelImporter importer = new ARModelImporter();
-		importer.loadFromAsset("neugereut.jet");
-		this.modelNode = (ARModelNode) importer.getNode();
-
-        /* alternative to give every meshNode a different texture
-        *
-        * u = workaround to get different textures on different nodes
-        * */
-        int u = 0;
-		for (int i = 0; i < importer.getMeshNodes().size(); i++){
-            if(u > 3 ){
-                u = 0;
-            }
-			ARTexture2D texture2D = new ARTexture2D();
-			texture2D.loadFromAsset("beton"+u+".png");
-			ARTextureMaterial material = new ARTextureMaterial();
-			material.setTexture(texture2D);
-            importer.getMeshNodes().get(i).setMaterial(material);
-            u++;
-		}
-
-
-        this.modelNode.rotateByDegrees(-90, 1.0f, 0.0f, 0.0f);
-		this.modelNode.scaleByUniform(3.0f);
-		this.modelNode.setVisible(true);
-
-	}
-
-    private void setupFence(){
-        ARModelImporter importer = new ARModelImporter();
-        importer.loadFromAsset("fence.jet");
-        this.modelNode = (ARModelNode) importer.getNode();
-
-        String size = Integer.toString(importer.getMeshNodes().size());
-		for (int i = 0; i < importer.getMeshNodes().size(); i++){
-			ARTexture2D texture2D = new ARTexture2D();
-            texture2D.loadFromAsset("fence" + i + ".png");
-			ARTextureMaterial material = new ARTextureMaterial();
-			material.setTexture(texture2D);
-            material.setTransparent(true);
-            importer.getMeshNodes().get(i).setMaterial(material);
-		}
-        //importer.getMeshNodes().get(0).getMesh()
-        this.modelNode.scaleByUniform(6.0f);
-        this.modelNode.setVisible(true);
-    }
 
 	//endregion
 
