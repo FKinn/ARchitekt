@@ -21,12 +21,16 @@ public class Models {
         switch (model){
             case "Neugereut":
                 setupNeugereut();
+                break;
             case "Bloodhound":
                 setupBloodhound();
+                break;
             case "Wall":
                 setupWall();
+                break;
             case "Fence":
                 setupFence();
+                break;
             default:
                 break;
 

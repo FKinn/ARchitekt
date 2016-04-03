@@ -1,13 +1,16 @@
 package eu.kudan.kudansamples;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.view.GestureDetectorCompat;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
+import android.widget.Toast;
 import com.jme3.math.Vector3f;
 import eu.kudan.kudan.*;
+import android.os.Vibrator;
 
 public class TestActivity extends ARActivity implements GestureDetector.OnGestureListener{
 
@@ -44,6 +47,7 @@ public class TestActivity extends ARActivity implements GestureDetector.OnGestur
 		super.onCreate(savedInstanceState);
 		this.arbitrack_state = ARBITRACK_STATE.ARBI_PLACEMENT;
 
+        //Log.i("KudanSamples", "Size of meshList: " + Integer.toString(importer.getMeshNodes().size()));
 
 	}
 
@@ -147,18 +151,20 @@ public class TestActivity extends ARActivity implements GestureDetector.OnGestur
 
 	@Override
 	public void onLongPress(MotionEvent e) {
+		Vibrator v = (Vibrator) this.getApplicationContext().getSystemService(Context.VIBRATOR_SERVICE);
+		v.vibrate(400);
         if(arbitrack_state == ARBITRACK_STATE.ARBI_TRACKING){
             arbitrack_state = ARBITRACK_STATE.ARBI_POSITIONING;
         } else if (arbitrack_state == ARBITRACK_STATE.ARBI_POSITIONING) {
             arbitrack_state = ARBITRACK_STATE.ARBI_TRACKING;
         }
-		//Log.i("KudanSamples", "LongPress");
+
 
 	}
 
 	@Override
 	public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-    		return false;
+        return false;
 	}
 
 	@Override
@@ -193,10 +199,5 @@ public class TestActivity extends ARActivity implements GestureDetector.OnGestur
 		}
 	}
 	//endregion
-
-	//region Models
-
-	//endregion
-
 
 }

@@ -52,6 +52,11 @@
     <uses-permission android:name="android.permission.INTERNET"/>
 
     <!--
+       Add this permission to allow the app to vibrate.
+   -->
+    <uses-permission android:name="android.permission.VIBRATE"/>
+
+    <!--
         Add this permission to check which network access properties (e.g.
         active type: 3G/WiFi).
      -->
