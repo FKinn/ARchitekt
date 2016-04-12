@@ -12,20 +12,25 @@ import com.jme3.math.Vector3f;
 import eu.kudan.kudan.*;
 import android.os.Vibrator;
 
-public class TestActivity extends ARActivity implements GestureDetector.OnGestureListener{
+public class TestActivity extends ARActivity implements GestureDetector.OnGestureListener, GestureDetector.OnDoubleTapListener{
 
 
     //gestures
     private ScaleGestureDetector mScaleDetector;
     private GestureDetectorCompat gDetector;
 
+    //additional variables
+    Context context;
+
     //track state
     private ARBITRACK_STATE arbitrack_state;
+
     enum ARBITRACK_STATE {
         ARBI_POSITIONING,
         ARBI_SCALING,
         ARBI_PLACEMENT,
-        ARBI_TRACKING
+        ARBI_TRACKING,
+        ARBI_LOCKED
     }
 
 	ARImageNode targetImageNode;
@@ -36,10 +41,10 @@ public class TestActivity extends ARActivity implements GestureDetector.OnGestur
 
 
 	public void onCreate(Bundle savedInstanceState) {
+        this.context = getApplicationContext();
 		// gesture
 		this.gDetector = new GestureDetectorCompat(this,this);
-
-		mScaleDetector = new ScaleGestureDetector(this.getApplicationContext(), new ScaleListener());
+		mScaleDetector = new ScaleGestureDetector(context, new ScaleListener());
 
 		// set api key for this package name.
 		ARAPIKey key = ARAPIKey.getInstance();
@@ -120,13 +125,34 @@ public class TestActivity extends ARActivity implements GestureDetector.OnGestur
                 this.modelNode.setPosition(position.getX(), position.getY(), position.getZ() + distanceX);
             }
         }
-
-
-
 	}
 	//endregion
 
 	//region gesture listener
+    @Override
+    public boolean onSingleTapConfirmed(MotionEvent e) {
+        tapGesture();
+
+        return false;
+    }
+
+    @Override
+    public boolean onDoubleTap(MotionEvent e) {
+        Vibrator v = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
+        v.vibrate(200);
+        if(arbitrack_state == ARBITRACK_STATE.ARBI_TRACKING){
+            arbitrack_state = ARBITRACK_STATE.ARBI_LOCKED;
+        } else if (arbitrack_state == ARBITRACK_STATE.ARBI_LOCKED){
+            arbitrack_state = ARBITRACK_STATE.ARBI_TRACKING;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean onDoubleTapEvent(MotionEvent e) {
+        return false;
+    }
+
 	@Override
 	public boolean onDown(MotionEvent e) {
 		return false;
@@ -139,8 +165,7 @@ public class TestActivity extends ARActivity implements GestureDetector.OnGestur
 
 	@Override
 	public boolean onSingleTapUp(MotionEvent e) {
-		tapGesture();
-		return false;
+    	return false;
 	}
 
 	@Override
@@ -151,7 +176,7 @@ public class TestActivity extends ARActivity implements GestureDetector.OnGestur
 
 	@Override
 	public void onLongPress(MotionEvent e) {
-		Vibrator v = (Vibrator) this.getApplicationContext().getSystemService(Context.VIBRATOR_SERVICE);
+		Vibrator v = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
 		v.vibrate(400);
         if(arbitrack_state == ARBITRACK_STATE.ARBI_TRACKING){
             arbitrack_state = ARBITRACK_STATE.ARBI_POSITIONING;
@@ -181,21 +206,29 @@ public class TestActivity extends ARActivity implements GestureDetector.OnGestur
 		@Override
 		public boolean onScale(ScaleGestureDetector detector) {
 
-			mScaleFactor *= detector.getScaleFactor();
-			// Don't let the object get too small or too large.
-			mScaleFactor = Math.max(0.1f, Math.min(mScaleFactor, 5.0f));
-			pinchGesture(mScaleFactor);
+			if(arbitrack_state == ARBITRACK_STATE.ARBI_SCALING){
+				mScaleFactor *= detector.getScaleFactor();
+				// Don't let the object get too small or too large.
+				mScaleFactor = Math.max(0.1f, Math.min(mScaleFactor, 5.0f));
+				pinchGesture(mScaleFactor);
+			}
 			return true;
 
 		}
 		@Override
 		public boolean onScaleBegin(ScaleGestureDetector detector){
-			lastScale = 1;
-			arbitrack_state = ARBITRACK_STATE.ARBI_SCALING;
+			if(arbitrack_state == ARBITRACK_STATE.ARBI_TRACKING){
+				lastScale = 1;
+				arbitrack_state = ARBITRACK_STATE.ARBI_SCALING;
+			}
+
 			return true;
 		}
 		public void onScaleEnd(ScaleGestureDetector detector){
-			arbitrack_state = ARBITRACK_STATE.ARBI_TRACKING;
+			if(arbitrack_state == ARBITRACK_STATE.ARBI_SCALING){
+				arbitrack_state = ARBITRACK_STATE.ARBI_TRACKING;
+			}
+
 		}
 	}
 	//endregion
